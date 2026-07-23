@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="navbar__brand">
+            <span class="navbar__mark"><span></span><span></span><span></span></span>
+            Performance Estimator
+        </a>
+        <button class="navbar__toggle" aria-label="Toggle navigation">&#9776;</button>
+        <ul class="navbar__links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict-form">Predict</a></li>
+            <li><a href="/charts">Charts</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Prediction Result</h1>
+            <p>Estimate for &ldquo;{{ title }}&rdquo;</p>
+        </div>
+
+        <div class="card result-card">
+            <span class="result-card__eyebrow">Predicted Performance</span>
+            <p class="result-card__label {{ label|lower }}">{{ label }}</p>
+
+            <div class="meter">
+                <div class="meter__fill {{ label|lower }}" data-confidence="{{ confidence }}"></div>
+            </div>
+
+            {% if confidence > 70 %}
+                <span class="confidence-badge confidence-badge--high">Confidence: {{ confidence }}%</span>
+            {% elif confidence >= 50 %}
+                <span class="confidence-badge confidence-badge--medium">Confidence: {{ confidence }}%</span>
+            {% else %}
+                <span class="confidence-badge confidence-badge--low">Confidence: {{ confidence }}%</span>
+            {% endif %}
+
+            <p class="result-explanation">
+                The model estimates this video's expected performance using textual content and metadata.
+            </p>
+
+            <div class="result-actions">
+                <a href="/predict-form" class="btn btn-primary">Try Another Prediction</a>
+                <a href="/" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Final Year Project &mdash; YouTube Video Performance Estimator</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

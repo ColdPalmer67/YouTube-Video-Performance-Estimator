@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charts & Model Evaluation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="navbar__brand">
+            <span class="navbar__mark"><span></span><span></span><span></span></span>
+            Performance Estimator
+        </a>
+        <button class="navbar__toggle" aria-label="Toggle navigation">&#9776;</button>
+        <ul class="navbar__links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/predict-form">Predict</a></li>
+            <li><a href="/charts">Charts</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Charts &amp; Model Evaluation</h1>
+            <p>Exploratory data analysis and evaluation results supporting the CNN performance classifier used in this project.</p>
+        </div>
+
+        <!--Section 1: Exploratory Data Analysis-->
+        <section class="chart-section">
+            <div class="chart-section__header">
+                <span class="chart-section__eyebrow">Section 01</span>
+                <h2>Exploratory Data Analysis</h2>
+                <p>
+                    Before model training, the dataset was analyzed to understand how video
+                    category relates to performance class. A Chi-square test of independence
+                    was applied between <strong>category</strong> and <strong>performance class</strong>
+                    (Low / Medium / High). The test produced a statistically significant result
+                    (p &lt; 0.05), indicating that video category is not independent of performance
+                    outcome &mdash; some categories are meaningfully more likely to fall into higher
+                    or lower performance classes than others.
+                </p>
+            </div>
+
+            <div class="chart-grid">
+                <figure class="chart-card">
+                    <img class="lightbox-trigger" src="{{ url_for('static', filename='images/category_performance_heatmap.png') }}"
+                         alt="Heatmap of video category against performance class">
+                    <figcaption>
+                        <strong>Category &times; Performance Heatmap.</strong>
+                        Visualizes the concentration of Low / Medium / High outcomes across
+                        categories, highlighting which categories skew toward stronger performance.
+                    </figcaption>
+                </figure>
+
+                <figure class="chart-card">
+                    <img class="lightbox-trigger" src="{{ url_for('static', filename='images/category_performance_stacked_bar.png') }}"
+                         alt="Stacked bar chart of performance class distribution per category">
+                    <figcaption>
+                        <strong>Category Performance Distribution.</strong>
+                        Stacked proportions of each performance class within every category,
+                        supporting the Chi-square finding of category-dependent outcomes.
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!--Section 2: Predictive Model Evaluation-->
+        <section class="chart-section">
+            <div class="chart-section__header">
+                <span class="chart-section__eyebrow">Section 02</span>
+                <h2>Predictive Model Evaluation</h2>
+                <p>
+                    Three models were trained and compared to justify the final model choice.
+                    <strong>Logistic Regression</strong> served as a linear baseline over the
+                    scaled metadata features. <strong>Random Forest</strong> served as a stronger
+                    non-linear baseline capable of capturing feature interactions without deep
+                    learning. The final model, <strong>CNN V2</strong>, is a multi-input late-fusion
+                    convolutional network combining a text branch (title, tags, description) with
+                    a metadata branch (subscriber count, duration, category), and was selected as
+                    the deployed model based on its overall accuracy advantage below.
+                </p>
+            </div>
+
+            <div class="chart-grid single">
+                <figure class="chart-card">
+                    <img class="lightbox-trigger" src="{{ url_for('static', filename='images/model_accuracy_comparison.png') }}"
+                         alt="Bar chart comparing accuracy of Logistic Regression, Random Forest, and CNN V2">
+                    <figcaption>
+                        <strong>Model Accuracy Comparison.</strong>
+                        Test-set accuracy across all three candidate models.
+                    </figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!--Section 3: Confusion Matrix Analysis-->
+        <section class="chart-section">
+            <div class="chart-section__header">
+                <span class="chart-section__eyebrow">Section 03</span>
+                <h2>Confusion Matrix Analysis</h2>
+                <p>
+                    Confusion matrices show per-class prediction behavior for each model,
+                    revealing where each approach tends to confuse adjacent performance
+                    classes (e.g. Medium vs. High) rather than relying on accuracy alone.
+                </p>
+            </div>
+
+            <div class="chart-grid three">
+                <figure class="chart-card">
+                    <img class="lightbox-trigger" src="{{ url_for('static', filename='images/logistic_regression_confusion_matrix.png') }}"
+                         alt="Confusion matrix for Logistic Regression model">
+                    <figcaption><strong>Logistic Regression</strong></figcaption>
+                </figure>
+
+                <figure class="chart-card">
+                    <img class="lightbox-trigger" src="{{ url_for('static', filename='images/random_forest_confusion_matrix.png') }}"
+                         alt="Confusion matrix for Random Forest model">
+                    <figcaption><strong>Random Forest</strong></figcaption>
+                </figure>
+
+                <figure class="chart-card">
+                    <img class="lightbox-trigger" src="{{ url_for('static', filename='images/cnn_v2_confusion_matrix.png') }}"
+                         alt="Confusion matrix for CNN V2 model">
+                    <figcaption><strong>CNN V2 (Deployed Model)</strong></figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!--Section 4: CNN Training Performance-->
+        <section class="chart-section">
+            <div class="chart-section__header">
+                <span class="chart-section__eyebrow">Section 04</span>
+                <h2>CNN Training Performance</h2>
+                <p>
+                    Training and validation curves for the deployed CNN V2 model, used to confirm
+                    the model converged appropriately and to check for signs of overfitting
+                    between training and validation sets across epochs.
+                </p>
+            </div>
+
+            <div class="chart-grid">
+                <figure class="chart-card">
+                    <img class="lightbox-trigger" src="{{ url_for('static', filename='images/cnn_v2_accuracy_curve.png') }}"
+                         alt="CNN V2 training and validation accuracy curve">
+                    <figcaption><strong>Accuracy Curve.</strong> Training vs. validation accuracy per epoch.</figcaption>
+                </figure>
+
+                <figure class="chart-card">
+                    <img class="lightbox-trigger" src="{{ url_for('static', filename='images/cnn_v2_loss_curve.png') }}"
+                         alt="CNN V2 training and validation loss curve">
+                    <figcaption><strong>Loss Curve.</strong> Training vs. validation loss per epoch.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Lightbox / modal overlay for chart images -->
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+        <button id="lightbox-close" class="lightbox__close" aria-label="Close image viewer">&times;</button>
+        <img id="lightbox-image" class="lightbox__image" src="" alt="Enlarged chart view">
+        <p id="lightbox-caption" class="lightbox__caption"></p>
+    </div>
+
+    <!-- Back to top button -->
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">&uarr;</button>
+
+    <footer>
+        <p>Final Year Project &mdash; YouTube Video Performance Estimator</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
