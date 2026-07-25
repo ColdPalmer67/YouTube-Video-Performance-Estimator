@@ -17,7 +17,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 ONNX_MODEL_PATH = os.path.join(BASE_DIR, "models", "model.onnx")
-TOKENIZER_PATH = os.path.join(BASE_DIR, "models", "tokenizer.pkl")
+WORD_INDEX_PATH = os.path.join(BASE_DIR, "models", "word_index.json")
 SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.pkl")
 TFIDF_PATH = os.path.join(BASE_DIR, "models", "tfidf_vectorizer.pkl")
 VECTORS_PATH = os.path.join(BASE_DIR, "models", "dataset_vectors.pkl")
@@ -34,8 +34,8 @@ app = Flask(__name__)
 print("Loading ONNX model and preprocessing assets...")
 session = ort.InferenceSession(ONNX_MODEL_PATH)
 
-with open(TOKENIZER_PATH, "rb") as f:
-    tokenizer = pickle.load(f)
+with open(WORD_INDEX_PATH, "r", encoding="utf-8") as f:
+    word_index = json.load(f)
 
 with open(SCALER_PATH, "rb") as f:
     scaler = pickle.load(f)
@@ -67,21 +67,24 @@ max_duration = max([float(r.get("duration_seconds", 1)) for r in dataset_rows] o
 print("Assets loaded successfully.")
 
 
-def pad_sequences_custom(sequences, maxlen=200):
-    arr = np.zeros((len(sequences), maxlen), dtype=np.float32)
-    for i, seq in enumerate(sequences):
-        if len(seq) > 0:
-            truncated = seq[:maxlen]
-            arr[i, :len(truncated)] = truncated
-    return arr
+def preprocess_text(text, maxlen=200):
+    words = str(text).lower().split()
+    sequence = [word_index.get(w, 1) for w in words]
+    
+    padded = np.zeros((1, maxlen), dtype=np.float32)
+    if sequence:
+        truncated = sequence[:maxlen]
+        padded[0, -len(truncated):] = truncated
+        
+    return padded
 
 
 def preprocess_input(title, tags, description, subscriber_count, duration_seconds, category_id):
     combined_text = f"{title} {tags} {description}"
-    sequence = tokenizer.texts_to_sequences([combined_text])
     
-    padded_text = pad_sequences_custom(sequence, maxlen=MAX_SEQUENCE_LENGTH)
-    metadata = np.array([[subscriber_count, duration_seconds, category_id]], dtype=float)
+    padded_text = preprocess_text(combined_text, maxlen=MAX_SEQUENCE_LENGTH)
+    
+    metadata = np.array([[subscriber_count, duration_seconds, category_id]], dtype=np.float32)
     metadata_scaled = scaler.transform(metadata).astype(np.float32)
 
     return padded_text, metadata_scaled
