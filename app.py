@@ -16,6 +16,9 @@ Model inputs:
 import pickle
 import json
 import numpy as np
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 from flask import Flask, render_template, request
 from tensorflow.keras.models import load_model
@@ -261,10 +264,16 @@ def charts():
 
 
 
+@app.route("/project-insights")
+def project_insights():
+
+    return render_template(
+        "project_insights.html"
+    )
+
+
+
 # Run Flask
 
 if __name__ == "__main__":
-
-    app.run(
-        debug=True
-    )
+    app.run(debug=True)

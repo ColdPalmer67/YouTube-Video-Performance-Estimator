@@ -12,15 +12,24 @@
 
     <nav class="navbar">
         <a href="/" class="navbar__brand">
-            <span class="navbar__mark"><span></span><span></span><span></span></span>
-            Performance Estimator
+            <span class="navbar__mark">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 3l16 9-16 9V3z"/></svg>
+            </span>
+            <span class="navbar__brand-text">
+                YT Performance Estimator
+                <small>Prediction Console</small>
+            </span>
         </a>
         <button class="navbar__toggle" aria-label="Toggle navigation">&#9776;</button>
         <ul class="navbar__links">
             <li><a href="/">Home</a></li>
             <li><a href="/predict-form">Predict</a></li>
+            <li><a href="/project-insights">Project Insights</a></li>
             <li><a href="/charts">Charts</a></li>
         </ul>
+        <div class="navbar__actions">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light theme">&#9789;</button>
+        </div>
     </nav>
 
     <main>

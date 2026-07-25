@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  setupThemeToggle();
   setupNavToggle();
   setActiveNavLink();
   animateResultMeter();
@@ -7,6 +8,49 @@ document.addEventListener("DOMContentLoaded", function () {
   setupLightbox();
   setupBackToTop();
 });
+
+/* Light / dark theme toggle, persisted across visits */
+function setupThemeToggle() {
+  var root = document.documentElement;
+  var button = document.querySelector("#theme-toggle");
+
+  var stored = null;
+  try {
+    stored = localStorage.getItem("theme");
+  } catch (e) {
+    stored = null;
+  }
+
+  var prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+  var initial = stored || (prefersLight ? "light" : "dark");
+
+  applyTheme(initial);
+
+  if (!button) return;
+
+  button.addEventListener("click", function () {
+    var current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
+    var next = current === "light" ? "dark" : "light";
+    applyTheme(next);
+    try {
+      localStorage.setItem("theme", next);
+    } catch (e) {
+      /* storage unavailable, theme still applies for this session */
+    }
+  });
+
+  function applyTheme(theme) {
+    if (theme === "light") {
+      root.setAttribute("data-theme", "light");
+    } else {
+      root.removeAttribute("data-theme");
+    }
+    if (button) {
+      button.textContent = theme === "light" ? "\u2600" : "\u263D";
+      button.setAttribute("aria-label", theme === "light" ? "Switch to dark theme" : "Switch to light theme");
+    }
+  }
+}
 
 /* Mobile navbar toggle. */
 function setupNavToggle() {
@@ -160,18 +204,31 @@ function setupLightbox() {
   });
 }
 
-// Show button after scrolling and return to top when clicked
+// Show button after scrolling and return to top when clicked.
+// Threshold is set relative to viewport height so it appears reliably
+// on both short and long pages, rather than a fixed pixel value that
+// never triggers on shorter pages.
 function setupBackToTop() {
   var button = document.querySelector("#back-to-top");
   if (!button) return;
 
-  window.addEventListener("scroll", function () {
-    if (window.scrollY > 400) {
+  var threshold = Math.max(280, window.innerHeight * 0.6);
+
+  function toggleVisibility() {
+    if (window.scrollY > threshold) {
       button.classList.add("visible");
     } else {
       button.classList.remove("visible");
     }
+  }
+
+  window.addEventListener("scroll", toggleVisibility, { passive: true });
+  window.addEventListener("resize", function () {
+    threshold = Math.max(280, window.innerHeight * 0.6);
+    toggleVisibility();
   });
+
+  toggleVisibility();
 
   button.addEventListener("click", function () {
     window.scrollTo({ top: 0, behavior: "smooth" });

@@ -1,6 +1,9 @@
-flask
+Flask
 tensorflow
-numpy
 scikit-learn
 pandas
-python-dotenv
+numpy
+matplotlib
+seaborn
+google-api-python-client
+gunicorn
