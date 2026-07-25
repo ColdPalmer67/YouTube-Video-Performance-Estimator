@@ -7,3 +7,5 @@ matplotlib
 seaborn
 requests
 google-api-python-client
+onnxruntime
+gunicorn

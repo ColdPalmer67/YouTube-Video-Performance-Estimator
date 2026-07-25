@@ -1,7 +1,7 @@
 """
 YouTube Video Performance Estimator
 
-Flask backend for serving the trained CNN model.
+Flask backend for serving the trained CNN model using ONNX Runtime.
 The model predicts video performance into three classes:
 Low, Medium, and High.
 
@@ -18,18 +18,14 @@ import json
 import pickle
 import numpy as np
 import pandas as pd
-
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+import onnxruntime as ort
 
 from flask import Flask, render_template, request
-from keras.models import load_model
-from keras.utils import pad_sequences
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Configuration
-MODEL_PATH = "models/youtube_cnn_v2_best.keras"
+ONNX_MODEL_PATH = "models/model.onnx"
 TOKENIZER_PATH = "models/tokenizer.pkl"
 SCALER_PATH = "models/scaler.pkl"
 CATEGORY_PATH = "models/category_mapping.json"
@@ -41,8 +37,9 @@ CLASS_LABELS = ["Low", "Medium", "High"]
 # Flask Setup
 app = Flask(__name__)
 
-print("Loading model and preprocessing files...")
-model = load_model(MODEL_PATH)
+print("Loading ONNX model and preprocessing files...")
+# Initialize ONNX Inference Session
+session = ort.InferenceSession(ONNX_MODEL_PATH)
 
 with open(TOKENIZER_PATH, "rb") as f:
     tokenizer = pickle.load(f)
@@ -75,19 +72,28 @@ dataset_vectors = tfidf.fit_transform(dataset["combined_text"])
 print("Similarity index ready.")
 
 
+def pad_sequences_custom(sequences, maxlen=200):
+    """
+    Pure NumPy replacement for keras.preprocessing.sequence.pad_sequences.
+    Pads and truncates post-sequence to match training format.
+    """
+    arr = np.zeros((len(sequences), maxlen), dtype=np.float32)
+    for i, seq in enumerate(sequences):
+        if len(seq) > 0:
+            truncated = seq[:maxlen]
+            arr[i, :len(truncated)] = truncated
+    return arr
+
+
 def preprocess_input(title, tags, description, subscriber_count, duration_seconds, category_id):
     combined_text = f"{title} {tags} {description}"
     sequence = tokenizer.texts_to_sequences([combined_text])
     
-    padded_text = pad_sequences(
-        sequence,
-        maxlen=MAX_SEQUENCE_LENGTH,
-        padding="post",
-        truncating="post"
-    )
+    # Custom post-padding and truncation
+    padded_text = pad_sequences_custom(sequence, maxlen=MAX_SEQUENCE_LENGTH)
 
     metadata = np.array([[subscriber_count, duration_seconds, category_id]], dtype=float)
-    metadata_scaled = scaler.transform(metadata)
+    metadata_scaled = scaler.transform(metadata).astype(np.float32)
 
     return padded_text, metadata_scaled
 
@@ -151,10 +157,14 @@ def predict():
             title, tags, description, subscriber_count, duration_seconds, category_id
         )
 
-        prediction = model.predict({
-            "text_input": text_input,
-            "metadata_input": metadata_input
-        })
+        # Map inputs to ONNX model input names
+        input_feed = {
+            session.get_inputs()[0].name: text_input,
+            session.get_inputs()[1].name: metadata_input
+        }
+
+        # Run ONNX inference
+        prediction = session.run(None, input_feed)[0]
 
         predicted_index = int(np.argmax(prediction[0]))
         predicted_label = CLASS_LABELS[predicted_index]
@@ -187,4 +197,5 @@ def project_insights():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
