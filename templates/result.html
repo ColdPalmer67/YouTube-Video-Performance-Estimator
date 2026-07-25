@@ -34,34 +34,183 @@
 
     <main>
         <div class="page-header">
-            <h1>Prediction Result</h1>
-            <p>Estimate for &ldquo;{{ title }}&rdquo;</p>
+            <span class="chart-section__eyebrow">Prediction Result</span>
+            <h1>Estimate for &ldquo;{{ title }}&rdquo;</h1>
+            <p>Here's how the model expects this video to perform, based on its text and metadata signals.</p>
         </div>
 
-        <div class="card result-card">
-            <span class="result-card__eyebrow">Predicted Performance</span>
-            <p class="result-card__label {{ label|lower }}">{{ label }}</p>
+        <!-- Section 1: Prediction Result -->
+        <section class="result-dashboard">
 
-            <div class="meter">
-                <div class="meter__fill {{ label|lower }}" data-confidence="{{ confidence }}"></div>
+            <div class="card result-hero result-hero--{{ label|lower }}">
+                <span class="result-hero__eyebrow">Predicted Performance</span>
+                <div class="result-hero__badge-row">
+                    <span class="result-hero__badge result-hero__badge--{{ label|lower }}">
+                        <span class="result-hero__dot"></span>{{ label }}
+                    </span>
+                </div>
+                <p class="result-hero__desc">
+                    {% if label == "High" %}
+                        This video shows strong signals typically associated with top-performing content.
+                    {% elif label == "Medium" %}
+                        This video shows moderate signals &mdash; solid, but with room to strengthen key metadata or messaging.
+                    {% else %}
+                        This video shows signals typically associated with lower-performing content.
+                    {% endif %}
+                </p>
             </div>
 
-            {% if confidence > 70 %}
-                <span class="confidence-badge confidence-badge--high">Confidence: {{ confidence }}%</span>
-            {% elif confidence >= 50 %}
-                <span class="confidence-badge confidence-badge--medium">Confidence: {{ confidence }}%</span>
-            {% else %}
-                <span class="confidence-badge confidence-badge--low">Confidence: {{ confidence }}%</span>
-            {% endif %}
+            <!-- Section 2: Confidence -->
+            <div class="card confidence-card">
+                <span class="confidence-card__eyebrow">Model Confidence</span>
+                <div class="confidence-card__row">
+                    <div class="meter meter--lg">
+                        <div class="meter__fill {{ label|lower }}" data-confidence="{{ confidence }}"></div>
+                    </div>
+                    <span class="confidence-card__value">{{ confidence }}%</span>
+                </div>
 
-            <p class="result-explanation">
-                The model estimates this video's expected performance using textual content and metadata.
-            </p>
+                {% if confidence > 70 %}
+                    <span class="confidence-badge confidence-badge--high">High confidence prediction</span>
+                {% elif confidence >= 50 %}
+                    <span class="confidence-badge confidence-badge--medium">Moderate confidence prediction</span>
+                {% else %}
+                    <span class="confidence-badge confidence-badge--low">Low confidence prediction</span>
+                {% endif %}
 
-            <div class="result-actions">
-                <a href="/predict-form" class="btn btn-primary">Try Another Prediction</a>
-                <a href="/" class="btn btn-secondary">Back to Home</a>
+                <p class="result-explanation">
+                    The model estimates this video's expected performance using textual content
+                    (title, tags, description) and metadata (subscriber count, duration, category).
+                </p>
             </div>
+
+        </section>
+
+        <!-- Section 3: Similar Videos from Dataset -->
+        <section class="chart-section similar-section">
+            <div class="chart-section__header">
+                <span class="chart-section__eyebrow">Section &mdash; Coming Soon</span>
+                <h2>Similar Videos from Dataset</h2>
+                <p>
+                    Videos from the training dataset with comparable text and metadata signals.
+                    This section is a UI placeholder &mdash; live similarity data will be connected
+                    in a future update.
+                </p>
+            </div>
+
+            <div class="similar-grid">
+
+                <article class="similar-card">
+                    <span class="similar-card__placeholder-tag">Placeholder</span>
+                    <h3 class="similar-card__title">Example Video Title Goes Here</h3>
+
+                    <div class="similar-card__row">
+                        <span class="similar-card__label">Performance</span>
+                        <span class="result-card__label high similar-card__value-label">High</span>
+                    </div>
+
+                    <div class="similar-card__meta">
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Category</span>
+                            <span class="similar-card__meta-value">Example Category</span>
+                        </div>
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Subscribers</span>
+                            <span class="similar-card__meta-value">~120,000</span>
+                        </div>
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Duration</span>
+                            <span class="similar-card__meta-value">8:42</span>
+                        </div>
+                    </div>
+
+                    <div class="similar-card__similarity">
+                        <span class="similar-card__meta-label">Similarity</span>
+                        <div class="meter">
+                            <div class="meter__fill high" style="width: 92%;"></div>
+                        </div>
+                        <span class="similar-card__similarity-value">92%</span>
+                    </div>
+
+                    <a href="#" class="similar-card__link" aria-disabled="true">View on YouTube &rarr;</a>
+                </article>
+
+                <article class="similar-card">
+                    <span class="similar-card__placeholder-tag">Placeholder</span>
+                    <h3 class="similar-card__title">Another Example Video Title</h3>
+
+                    <div class="similar-card__row">
+                        <span class="similar-card__label">Performance</span>
+                        <span class="result-card__label medium similar-card__value-label">Medium</span>
+                    </div>
+
+                    <div class="similar-card__meta">
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Category</span>
+                            <span class="similar-card__meta-value">Example Category</span>
+                        </div>
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Subscribers</span>
+                            <span class="similar-card__meta-value">~45,000</span>
+                        </div>
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Duration</span>
+                            <span class="similar-card__meta-value">5:15</span>
+                        </div>
+                    </div>
+
+                    <div class="similar-card__similarity">
+                        <span class="similar-card__meta-label">Similarity</span>
+                        <div class="meter">
+                            <div class="meter__fill medium" style="width: 78%;"></div>
+                        </div>
+                        <span class="similar-card__similarity-value">78%</span>
+                    </div>
+
+                    <a href="#" class="similar-card__link" aria-disabled="true">View on YouTube &rarr;</a>
+                </article>
+
+                <article class="similar-card">
+                    <span class="similar-card__placeholder-tag">Placeholder</span>
+                    <h3 class="similar-card__title">A Third Example Video Title</h3>
+
+                    <div class="similar-card__row">
+                        <span class="similar-card__label">Performance</span>
+                        <span class="result-card__label low similar-card__value-label">Low</span>
+                    </div>
+
+                    <div class="similar-card__meta">
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Category</span>
+                            <span class="similar-card__meta-value">Example Category</span>
+                        </div>
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Subscribers</span>
+                            <span class="similar-card__meta-value">~8,300</span>
+                        </div>
+                        <div class="similar-card__meta-item">
+                            <span class="similar-card__meta-label">Duration</span>
+                            <span class="similar-card__meta-value">3:07</span>
+                        </div>
+                    </div>
+
+                    <div class="similar-card__similarity">
+                        <span class="similar-card__meta-label">Similarity</span>
+                        <div class="meter">
+                            <div class="meter__fill low" style="width: 61%;"></div>
+                        </div>
+                        <span class="similar-card__similarity-value">61%</span>
+                    </div>
+
+                    <a href="#" class="similar-card__link" aria-disabled="true">View on YouTube &rarr;</a>
+                </article>
+
+            </div>
+        </section>
+
+        <div class="result-actions result-actions--page">
+            <a href="/predict-form" class="btn btn-primary">Try Another Prediction</a>
+            <a href="/" class="btn btn-secondary">Back to Home</a>
         </div>
     </main>
 

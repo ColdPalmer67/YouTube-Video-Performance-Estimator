@@ -77,18 +77,22 @@ function setActiveNavLink() {
   });
 }
 
-// Animate the confidence meter using the prediction value from the page
+// Animate confidence meters using the prediction value from the page.
+// Only targets meters with a data-confidence attribute, since some meters
+// (e.g. similarity scores on placeholder cards) set their width directly.
 function animateResultMeter() {
-  var fill = document.querySelector(".meter__fill");
-  if (!fill) return;
+  var fills = document.querySelectorAll(".meter__fill[data-confidence]");
+  if (!fills.length) return;
 
-  var confidence = parseFloat(fill.getAttribute("data-confidence")) || 0;
+  fills.forEach(function (fill) {
+    var confidence = parseFloat(fill.getAttribute("data-confidence")) || 0;
 
-  // Delay the update so the progress animation is visible
-  window.requestAnimationFrame(function () {
-    setTimeout(function () {
-      fill.style.width = confidence + "%";
-    }, 100);
+    // Delay the update so the progress animation is visible
+    window.requestAnimationFrame(function () {
+      setTimeout(function () {
+        fill.style.width = confidence + "%";
+      }, 100);
+    });
   });
 }
 
