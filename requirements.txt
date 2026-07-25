@@ -1,11 +1,5 @@
 Flask
-tensorflow
-scikit-learn
-pandas
-numpy
-matplotlib
-seaborn
-requests
-google-api-python-client
 onnxruntime
+scikit-learn
+numpy
 gunicorn

@@ -2,34 +2,28 @@
 YouTube Video Performance Estimator
 
 Flask backend for serving the trained CNN model using ONNX Runtime.
-The model predicts video performance into three classes:
-Low, Medium, and High.
-
-Model inputs:
-- Text features:
-  Title, tags, and description converted into padded sequences.
-
-- Metadata features:
-  Subscriber count, video duration, and category ID.
 """
 
 import os
+import csv
 import json
 import pickle
 import numpy as np
-import pandas as pd
 import onnxruntime as ort
 
 from flask import Flask, render_template, request
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Configuration
-ONNX_MODEL_PATH = "models/model.onnx"
-TOKENIZER_PATH = "models/tokenizer.pkl"
-SCALER_PATH = "models/scaler.pkl"
-CATEGORY_PATH = "models/category_mapping.json"
-DATA_PATH = "data/processed_youtube_data_v2.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+ONNX_MODEL_PATH = os.path.join(BASE_DIR, "models", "model.onnx")
+TOKENIZER_PATH = os.path.join(BASE_DIR, "models", "tokenizer.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler.pkl")
+TFIDF_PATH = os.path.join(BASE_DIR, "models", "tfidf_vectorizer.pkl")
+VECTORS_PATH = os.path.join(BASE_DIR, "models", "dataset_vectors.pkl")
+
+CATEGORY_PATH = os.path.join(BASE_DIR, "data", "category_mapping.json")
+DATA_PATH = os.path.join(BASE_DIR, "data", "processed_youtube_data_v2.csv")
 
 MAX_SEQUENCE_LENGTH = 200
 CLASS_LABELS = ["Low", "Medium", "High"]
@@ -37,8 +31,7 @@ CLASS_LABELS = ["Low", "Medium", "High"]
 # Flask Setup
 app = Flask(__name__)
 
-print("Loading ONNX model and preprocessing files...")
-# Initialize ONNX Inference Session
+print("Loading ONNX model and preprocessing assets...")
 session = ort.InferenceSession(ONNX_MODEL_PATH)
 
 with open(TOKENIZER_PATH, "rb") as f:
@@ -47,36 +40,34 @@ with open(TOKENIZER_PATH, "rb") as f:
 with open(SCALER_PATH, "rb") as f:
     scaler = pickle.load(f)
 
+print("Loading pre-computed similarity index...")
+with open(TFIDF_PATH, "rb") as f:
+    tfidf = pickle.load(f)
+
+with open(VECTORS_PATH, "rb") as f:
+    dataset_vectors = pickle.load(f)
+
 try:
     with open(CATEGORY_PATH, "r") as f:
         category_mapping = json.load(f)
 except FileNotFoundError:
     category_mapping = {}
 
-print("Model and preprocessing files loaded successfully.")
-
-# For Similar Video Search
 print("Loading dataset...")
-dataset = pd.read_csv(DATA_PATH)
-dataset["combined_text"] = (
-    dataset["title"].fillna("") + " " +
-    dataset["tags"].fillna("") + " " +
-    dataset["description"].fillna("")
-)
-print("Dataset loaded successfully.")
+dataset_rows = []
 
-# TF-IDF Similarity Index
-print("Building similarity index...")
-tfidf = TfidfVectorizer(max_features=10000, stop_words="english")
-dataset_vectors = tfidf.fit_transform(dataset["combined_text"])
-print("Similarity index ready.")
+with open(DATA_PATH, mode="r", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        dataset_rows.append(row)
+
+max_subscribers = max([float(r.get("subscriber_count", 1)) for r in dataset_rows] or [1]) + 1
+max_duration = max([float(r.get("duration_seconds", 1)) for r in dataset_rows] or [1]) + 1
+
+print("Assets loaded successfully.")
 
 
 def pad_sequences_custom(sequences, maxlen=200):
-    """
-    Pure NumPy replacement for keras.preprocessing.sequence.pad_sequences.
-    Pads and truncates post-sequence to match training format.
-    """
     arr = np.zeros((len(sequences), maxlen), dtype=np.float32)
     for i, seq in enumerate(sequences):
         if len(seq) > 0:
@@ -89,9 +80,7 @@ def preprocess_input(title, tags, description, subscriber_count, duration_second
     combined_text = f"{title} {tags} {description}"
     sequence = tokenizer.texts_to_sequences([combined_text])
     
-    # Custom post-padding and truncation
     padded_text = pad_sequences_custom(sequence, maxlen=MAX_SEQUENCE_LENGTH)
-
     metadata = np.array([[subscriber_count, duration_seconds, category_id]], dtype=float)
     metadata_scaled = scaler.transform(metadata).astype(np.float32)
 
@@ -103,33 +92,39 @@ def find_similar_videos(title, tags, description, subscriber_count, duration_sec
     input_vector = tfidf.transform([input_text])
     text_scores = cosine_similarity(input_vector, dataset_vectors)[0]
 
-    subscriber_diff = abs(dataset["subscriber_count"] - subscriber_count) / (dataset["subscriber_count"].max() + 1)
-    duration_diff = abs(dataset["duration_seconds"] - duration_seconds) / (dataset["duration_seconds"].max() + 1)
-    
-    metadata_score = 1 - ((subscriber_diff + duration_diff) / 2)
-    category_score = (dataset["category_id"] == int(category_id)).astype(float)
+    class_map = {"0": "Low", "1": "Medium", "2": "High", 0: "Low", 1: "Medium", 2: "High"}
+    scored_videos = []
 
-    final_score = (text_scores * 0.7) + (metadata_score * 0.2) + (category_score * 0.1)
+    for idx, row in enumerate(dataset_rows):
+        row_subs = float(row.get("subscriber_count", 0))
+        row_dur = float(row.get("duration_seconds", 0))
+        row_cat = float(row.get("category_id", 0))
 
-    results = dataset.copy()
-    results["similarity"] = final_score * 100
-    results = results.sort_values(by="similarity", ascending=False)
+        subscriber_diff = abs(row_subs - subscriber_count) / max_subscribers
+        duration_diff = abs(row_dur - duration_seconds) / max_duration
+        
+        metadata_score = 1.0 - ((subscriber_diff + duration_diff) / 2.0)
+        category_score = 1.0 if row_cat == float(category_id) else 0.0
 
-    class_map = {0: "Low", 1: "Medium", 2: "High"}
-    videos = []
+        final_score = (text_scores[idx] * 0.7) + (metadata_score * 0.2) + (category_score * 0.1)
+        similarity_pct = round(float(final_score) * 100, 2)
 
-    for _, row in results.head(top_n).iterrows():
-        videos.append({
-            "title": row["title"],
-            "performance_class": class_map.get(int(row["performance_class"]), "Unknown"),
-            "category_id": row["category_id"],
-            "subscriber_count": int(row["subscriber_count"]),
-            "duration_seconds": int(row["duration_seconds"]),
-            "similarity": round(row["similarity"], 2),
-            "youtube_url": f"https://www.youtube.com/watch?v={row['video_id']}"
+        raw_perf = row.get("performance_class", "0")
+        perf_label = class_map.get(raw_perf, "Unknown")
+
+        scored_videos.append({
+            "title": row.get("title", "Untitled"),
+            "performance_class": perf_label,
+            "category_id": row.get("category_id", 0),
+            "subscriber_count": int(row_subs),
+            "duration_seconds": int(row_dur),
+            "similarity": similarity_pct,
+            "youtube_url": f"https://www.youtube.com/watch?v={row.get('video_id', '')}",
+            "score": final_score
         })
 
-    return videos
+    scored_videos.sort(key=lambda x: x["score"], reverse=True)
+    return scored_videos[:top_n]
 
 
 # Routes
@@ -157,13 +152,12 @@ def predict():
             title, tags, description, subscriber_count, duration_seconds, category_id
         )
 
-        # Map inputs to ONNX model input names
+        input_names = [i.name for i in session.get_inputs()]
         input_feed = {
-            session.get_inputs()[0].name: text_input,
-            session.get_inputs()[1].name: metadata_input
+            input_names[0]: text_input,
+            input_names[1]: metadata_input
         }
 
-        # Run ONNX inference
         prediction = session.run(None, input_feed)[0]
 
         predicted_index = int(np.argmax(prediction[0]))
@@ -198,4 +192,4 @@ def project_insights():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=False)
