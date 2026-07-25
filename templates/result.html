@@ -41,7 +41,6 @@
 
         <!-- Section 1: Prediction Result -->
         <section class="result-dashboard">
-
             <div class="card result-hero result-hero--{{ label|lower }}">
                 <span class="result-hero__eyebrow">Predicted Performance</span>
                 <div class="result-hero__badge-row">
@@ -83,128 +82,67 @@
                     (title, tags, description) and metadata (subscriber count, duration, category).
                 </p>
             </div>
-
         </section>
 
         <!-- Section 3: Similar Videos from Dataset -->
         <section class="chart-section similar-section">
             <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section &mdash; Coming Soon</span>
                 <h2>Similar Videos from Dataset</h2>
                 <p>
-                    Videos from the training dataset with comparable text and metadata signals.
-                    This section is a UI placeholder &mdash; live similarity data will be connected
-                    in a future update.
+                    These videos are retrieved from the training dataset based on similar
+                    text content, subscriber range, duration, and category information.
+                    They provide examples of videos with comparable characteristics.
                 </p>
             </div>
 
             <div class="similar-grid">
+                {% if similar_videos %}
+                    {% for video in similar_videos %}
+                    <article class="similar-card">
+                        <h3 class="similar-card__title">{{ video.title }}</h3>
 
-                <article class="similar-card">
-                    <span class="similar-card__placeholder-tag">Placeholder</span>
-                    <h3 class="similar-card__title">Example Video Title Goes Here</h3>
-
-                    <div class="similar-card__row">
-                        <span class="similar-card__label">Performance</span>
-                        <span class="result-card__label high similar-card__value-label">High</span>
-                    </div>
-
-                    <div class="similar-card__meta">
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Category</span>
-                            <span class="similar-card__meta-value">Example Category</span>
+                        <div class="similar-card__row">
+                            <span class="similar-card__label">Performance</span>
+                            <span class="result-card__label {{ video.performance_class|lower }}">
+                                {{ video.performance_class }}
+                            </span>
                         </div>
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Subscribers</span>
-                            <span class="similar-card__meta-value">~120,000</span>
+
+                        <div class="similar-card__meta">
+                            <div class="similar-card__meta-item">
+                                <span class="similar-card__meta-label">Category</span>
+                                <span class="similar-card__meta-value">{{ video.category_id }}</span>
+                            </div>
+
+                            <div class="similar-card__meta-item">
+                                <span class="similar-card__meta-label">Subscribers</span>
+                                <span class="similar-card__meta-value">{{ "{:,}".format(video.subscriber_count) }}</span>
+                            </div>
+
+                            <div class="similar-card__meta-item">
+                                <span class="similar-card__meta-label">Duration</span>
+                                <span class="similar-card__meta-value">
+                                    {{ video.duration_seconds // 60 }}m {{ video.duration_seconds % 60 }}s
+                                </span>
+                            </div>
                         </div>
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Duration</span>
-                            <span class="similar-card__meta-value">8:42</span>
+
+                        <div class="similar-card__similarity">
+                            <span class="similar-card__meta-label">Similarity</span>
+                            <div class="meter">
+                                <div class="meter__fill high" style="width: {{ video.similarity }}%;"></div>
+                            </div>
+                            <span class="similar-card__similarity-value">{{ video.similarity }}%</span>
                         </div>
-                    </div>
 
-                    <div class="similar-card__similarity">
-                        <span class="similar-card__meta-label">Similarity</span>
-                        <div class="meter">
-                            <div class="meter__fill high" style="width: 92%;"></div>
-                        </div>
-                        <span class="similar-card__similarity-value">92%</span>
-                    </div>
-
-                    <a href="#" class="similar-card__link" aria-disabled="true">View on YouTube &rarr;</a>
-                </article>
-
-                <article class="similar-card">
-                    <span class="similar-card__placeholder-tag">Placeholder</span>
-                    <h3 class="similar-card__title">Another Example Video Title</h3>
-
-                    <div class="similar-card__row">
-                        <span class="similar-card__label">Performance</span>
-                        <span class="result-card__label medium similar-card__value-label">Medium</span>
-                    </div>
-
-                    <div class="similar-card__meta">
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Category</span>
-                            <span class="similar-card__meta-value">Example Category</span>
-                        </div>
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Subscribers</span>
-                            <span class="similar-card__meta-value">~45,000</span>
-                        </div>
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Duration</span>
-                            <span class="similar-card__meta-value">5:15</span>
-                        </div>
-                    </div>
-
-                    <div class="similar-card__similarity">
-                        <span class="similar-card__meta-label">Similarity</span>
-                        <div class="meter">
-                            <div class="meter__fill medium" style="width: 78%;"></div>
-                        </div>
-                        <span class="similar-card__similarity-value">78%</span>
-                    </div>
-
-                    <a href="#" class="similar-card__link" aria-disabled="true">View on YouTube &rarr;</a>
-                </article>
-
-                <article class="similar-card">
-                    <span class="similar-card__placeholder-tag">Placeholder</span>
-                    <h3 class="similar-card__title">A Third Example Video Title</h3>
-
-                    <div class="similar-card__row">
-                        <span class="similar-card__label">Performance</span>
-                        <span class="result-card__label low similar-card__value-label">Low</span>
-                    </div>
-
-                    <div class="similar-card__meta">
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Category</span>
-                            <span class="similar-card__meta-value">Example Category</span>
-                        </div>
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Subscribers</span>
-                            <span class="similar-card__meta-value">~8,300</span>
-                        </div>
-                        <div class="similar-card__meta-item">
-                            <span class="similar-card__meta-label">Duration</span>
-                            <span class="similar-card__meta-value">3:07</span>
-                        </div>
-                    </div>
-
-                    <div class="similar-card__similarity">
-                        <span class="similar-card__meta-label">Similarity</span>
-                        <div class="meter">
-                            <div class="meter__fill low" style="width: 61%;"></div>
-                        </div>
-                        <span class="similar-card__similarity-value">61%</span>
-                    </div>
-
-                    <a href="#" class="similar-card__link" aria-disabled="true">View on YouTube &rarr;</a>
-                </article>
-
+                        <a href="{{ video.youtube_url }}" target="_blank" rel="noopener noreferrer" class="similar-card__link">
+                            View on YouTube &rarr;
+                        </a>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <p>No similar videos found.</p>
+                {% endif %}
             </div>
         </section>
 
