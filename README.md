@@ -1,14 +1,19 @@
 # YouTube Video Performance Estimator
 
+**Live Demo:**  
+https://you-tube-video-performance-estimato.vercel.app/
+
 A machine learning web application that predicts YouTube video performance classes (**Low, Medium, High**) using natural language processing (NLP) and video metadata features.
 
-This project was developed as a **Final Year Project** to explore the application of data mining, machine learning, deep learning, and software engineering concepts in an end-to-end system.
+This project was developed as a **Final Year Project** to explore the combination of **data mining, machine learning, deep learning, and software engineering** through an end-to-end application.
+
+> ⚠️ Note: This project is built for academic and portfolio demonstration purposes. The predictions are experimental estimates from a trained machine learning model and should not be interpreted as guaranteed indicators of future video success.
 
 ---
 
-## Project Overview
+# Project Overview
 
-The system analyzes YouTube video information, including:
+The system analyzes YouTube video information and estimates its expected performance class based on:
 
 - Video title
 - Tags
@@ -17,96 +22,112 @@ The system analyzes YouTube video information, including:
 - Video duration
 - Category
 
-Using these features, the trained model estimates the expected performance class of a video.
+The goal is to demonstrate how textual and numerical signals can be combined to build a machine learning-based prediction system.
 
 ---
 
-## Features
+# Live Application Features
 
-- NLP-based text analysis using:
-  - Video title
-  - Tags
-  - Description
+The deployed web application allows users to:
 
-- Multi-input CNN classification model combining:
-  - Text features
-  - Numerical metadata features
-
-- Metadata integration:
-  - Subscriber count
-  - Video duration
-  - Category ID
-
-- Flask web application deployment
-
-- Model evaluation dashboard containing:
-  - Exploratory data analysis visualizations
-  - Statistical analysis results
-  - Machine learning comparison charts
-  - Deep learning evaluation metrics
+1. Enter YouTube video information
+2. Submit video details for prediction
+3. Receive predicted performance class:
+   - Low
+   - Medium
+   - High
+4. View model confidence score
+5. Explore:
+   - Dataset insights
+   - Statistical analysis
+   - Model evaluation results
+   - Similar video examples
 
 ---
 
-## Tech Stack
+# Machine Learning Features
 
-**Programming Language**
-- Python
+## NLP Text Analysis
 
-**Machine Learning & Data Mining**
-- TensorFlow / Keras
-- Scikit-learn
-- Pandas
-- NumPy
+The model processes:
 
-**Web Development**
-- Flask
-- HTML
-- CSS
-- JavaScript
+- Video title
+- Tags
+- Description
 
-**Data Source**
-- YouTube Data API
+Text features are transformed using tokenization and padding before being passed into the deep learning model.
 
----
+## Metadata Integration
 
-## Machine Learning Pipeline
-
-```text
-Data Collection
-        ↓
-Data Preprocessing
-        ↓
-Exploratory Data Analysis
-        ↓
-Statistical Testing (Chi-Square Analysis)
-        ↓
-Baseline Machine Learning Models
-        ↓
-CNN Deep Learning Model
-        ↓
-Flask Web Deployment
-```
-
----
-
-## Model Architecture
-
-The final model uses a multi-input CNN architecture.
-
-### Text Branch
-- Combines video title, tags, and description
-- Tokenization and padding
-- Embedding layer
-- 1D Convolutional Neural Network
-
-### Metadata Branch
-Uses numerical features:
+The model also uses numerical video information:
 
 - Subscriber count
 - Video duration
 - Category ID
 
-The extracted features from both branches are combined using late fusion before classification into:
+These features provide additional context beyond text information.
+
+---
+
+# Machine Learning Pipeline
+
+```text
+YouTube Data Collection
+          ↓
+Data Preprocessing
+          ↓
+Exploratory Data Analysis
+          ↓
+Statistical Mining (Chi-Square Analysis)
+          ↓
+Baseline Machine Learning Models
+          ↓
+CNN Deep Learning Model
+          ↓
+Flask Web Application
+          ↓
+Deployment
+```
+
+---
+
+# Model Architecture
+
+The final prediction model uses a **multi-input CNN architecture**.
+
+## Text Branch
+
+Processes combined text:
+
+- Title
+- Tags
+- Description
+
+Pipeline:
+
+```
+Text Input
+    ↓
+Tokenization
+    ↓
+Padding
+    ↓
+Embedding Layer
+    ↓
+1D CNN Feature Extraction
+```
+
+## Metadata Branch
+
+Processes numerical features:
+
+- Subscriber count
+- Duration
+- Category ID
+
+The extracted text and metadata features are combined using **late fusion** before classification.
+
+Final output:
 
 - Low Performance
 - Medium Performance
@@ -114,61 +135,109 @@ The extracted features from both branches are combined using late fusion before 
 
 ---
 
-## Project Structure
+# Model Evaluation Dashboard
+
+The application includes evaluation pages showing:
+
+- Exploratory data analysis results
+- Category-performance relationships
+- Chi-square statistical analysis
+- Baseline model comparison
+- Confusion matrices
+- CNN training performance curves
+
+---
+
+# Tech Stack
+
+## Programming
+
+- Python
+
+## Machine Learning / Data Mining
+
+- TensorFlow / Keras
+- Scikit-learn
+- NumPy
+- Pandas
+
+## Web Development
+
+- Flask
+- HTML
+- CSS
+- JavaScript
+
+## Data Source
+
+- YouTube Data API
+
+## Deployment
+
+- Vercel
+
+---
+
+# Project Structure
 
 ```text
 YouTube-Video-Performance-Estimator/
 
-├── app.py                 # Flask application
-├── models/                # Trained model and preprocessing artifacts
-├── scripts/               # Data collection, preprocessing, and analysis scripts
-├── templates/             # HTML templates
-├── static/                # CSS, JavaScript, and visualization images
-├── data/                  # Supporting project files
-└── requirements.txt       # Python dependencies
+├── app.py                  # Flask application
+├── models/                 # Trained model and preprocessing artifacts
+├── scripts/                # Data collection and analysis scripts
+├── templates/              # HTML templates
+├── static/                 # CSS, JavaScript, and visual assets
+├── data/                   # Supporting dataset files
+└── requirements.txt        # Python dependencies
 ```
 
 ---
 
-## Application Features
-
-The deployed Flask application allows users to:
-
-1. Enter YouTube video information
-2. Submit the video details for prediction
-3. Receive a predicted performance category
-4. View prediction confidence
-5. Explore model evaluation and analysis charts
-
----
-
-## Academic Context
+# Academic Context
 
 This repository contains the implementation of my Final Year Project.
 
-The project demonstrates an end-to-end machine learning workflow, including:
+The project demonstrates an end-to-end workflow involving:
 
 - Data collection
 - Data preprocessing
-- Statistical analysis
+- Exploratory analysis
+- Statistical testing
 - Machine learning experimentation
-- Deep learning model development
+- Deep learning development
 - Web application deployment
 
 ---
 
-## Future Improvements
+# Current Limitations
 
-Possible future improvements include:
+This project is a research and learning implementation rather than a production forecasting system.
 
-- Increasing dataset size
-- Improving prediction performance
-- Experimenting with transformer-based NLP models
-- Adding live YouTube API prediction capability
-- Deploying the application to a cloud platform
+Current limitations include:
+
+- Prediction accuracy is limited by available dataset signals
+- YouTube performance depends on many external factors not included in the model
+- The model does not account for future trends, audience behaviour, or platform algorithm changes
+- Predictions should be interpreted as model estimates rather than guarantees
 
 ---
 
-## Disclaimer
+# Future Improvements
 
-This project was created for academic and portfolio demonstration purposes. Prediction results are estimates produced by a trained machine learning model and should not be considered as guaranteed indicators of future video performance.
+Possible future improvements:
+
+- Increase dataset size and diversity
+- Improve prediction performance
+- Experiment with transformer-based NLP models
+- Add real-time YouTube API analysis
+- Improve similarity search recommendations
+- Deploy with a production-scale ML infrastructure
+
+---
+
+# Disclaimer
+
+This project was created for **academic and portfolio demonstration purposes**.
+
+The prediction results are generated by a trained machine learning model and should not be considered professional advice or a guaranteed prediction of YouTube video success.
