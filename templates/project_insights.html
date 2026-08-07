@@ -11,370 +11,275 @@
 <body>
 
     <nav class="navbar">
-        <a href="/" class="navbar__brand">
-            <span class="navbar__mark">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 3l16 9-16 9V3z"/></svg>
-            </span>
-            <span class="navbar__brand-text">
-                YT Performance Estimator
-                <small>Prediction Console</small>
-            </span>
-        </a>
         <button class="navbar__toggle" aria-label="Toggle navigation">&#9776;</button>
         <ul class="navbar__links">
             <li><a href="/">Home</a></li>
             <li><a href="/predict-form">Predict</a></li>
-            <li><a href="/project-insights">Project Insights</a></li>
+            <li><a href="/project-insights">Insights</a></li>
             <li><a href="/charts">Charts</a></li>
         </ul>
         <div class="navbar__actions">
             <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light theme">&#9789;</button>
+            <a href="/predict-form" class="btn navbar__cta">Run a prediction</a>
         </div>
     </nav>
 
     <main>
         <div class="page-header">
-            <h1>Project Insights</h1>
-            <p>A behind-the-scenes look at the dataset, pipeline, and model that power the performance predictions &mdash; from raw YouTube data to a deployed CNN.</p>
+            <h1>Pipeline &amp; methodology</h1>
+            <p>The dataset, pipeline, and model that power the performance predictions — from raw YouTube data to a deployed CNN.</p>
         </div>
 
-        <nav class="insights-nav" aria-label="Section shortcuts">
-            <a href="#overview">Overview</a>
-            <a href="#dataset">Dataset</a>
-            <a href="#categories">Categories</a>
-            <a href="#pipeline">Pipeline</a>
-            <a href="#features">Features</a>
-            <a href="#preprocessing">Preprocessing</a>
-            <a href="#architecture">Architecture</a>
-            <a href="#development">Model Development</a>
-            <a href="#evaluation">Evaluation</a>
-            <a href="#challenges">Challenges</a>
-            <a href="#tech">Technologies</a>
-            <a href="#future">Future Work</a>
-        </nav>
+        <div class="insights-layout">
+            <nav class="insights-nav" aria-label="Section shortcuts">
+                <a href="#overview">01 Overview &amp; dataset</a>
+                <a href="#features-prep">02 Features &amp; preprocessing</a>
+                <a href="#architecture">03 Architecture &amp; training</a>
+                <a href="#evaluation">04 Evaluation &amp; scope</a>
+            </nav>
 
-        <!-- Section 1: Project Overview -->
-        <section class="chart-section" id="overview">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 01</span>
-                <h2>Project Overview</h2>
-                <p>
-                    This is a final year project that estimates how well a YouTube video is likely
-                    to perform before it's even published. It combines natural language processing
-                    over the title, tags, and description with structured metadata such as
-                    subscriber count, duration, and category, feeding both into a convolutional
-                    neural network. The model outputs one of three performance classes.
-                </p>
-            </div>
+            <div class="insights-content">
 
-            <div class="hero__signals" style="margin-top: 0;">
-                <span class="hero__signal-chip"><span class="swatch low"></span>Low performance</span>
-                <span class="hero__signal-chip"><span class="swatch medium"></span>Medium performance</span>
-                <span class="hero__signal-chip"><span class="swatch high"></span>High performance</span>
-            </div>
-        </section>
+                <!-- Pillar 1: Overview & Dataset Collection -->
+                <section class="chart-section" id="overview">
+                    <div class="chart-section__header">
+                        <span class="chart-section__eyebrow">01</span>
+                        <h2>Overview &amp; dataset collection</h2>
+                        <p>
+                            This project estimates how well a YouTube video is likely to perform
+                            before it's published. It combines natural language processing over
+                            the title, tags, and description with structured metadata — subscriber
+                            count, duration, and category — feeding both into a convolutional
+                            neural network that outputs one of three performance classes: Low,
+                            Medium, or High.
+                        </p>
+                    </div>
 
-        <!-- Section 2: Dataset Overview -->
-        <section class="chart-section" id="dataset">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 02</span>
-                <h2>Dataset Overview</h2>
-                <p>The model was trained on a dataset built specifically for this project using the YouTube Data API.</p>
-            </div>
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-card__value">24,000</div>
+                            <div class="stat-card__label">Videos collected</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__value">8</div>
+                            <div class="stat-card__label">Categories (all used in deployed model)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__value">3</div>
+                            <div class="stat-card__label">Prediction classes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__value">API</div>
+                            <div class="stat-card__label">YouTube Data API source</div>
+                        </div>
+                    </div>
 
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-card__value">24,000</div>
-                    <div class="stat-card__label">Videos collected</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card__value">8</div>
-                    <div class="stat-card__label">Categories</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card__value">~3,000</div>
-                    <div class="stat-card__label">Videos per category</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card__value">3</div>
-                    <div class="stat-card__label">Prediction classes</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card__value">API</div>
-                    <div class="stat-card__label">YouTube Data API source</div>
-                </div>
-            </div>
-        </section>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; margin: var(--sp-5) 0 var(--sp-3);">
+                        Eight categories were sampled at roughly 3,000 videos each, and all eight
+                        were retained in the deployed model.
+                    </p>
 
-        <!-- Section 3: Dataset Categories -->
-        <section class="chart-section" id="categories">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 03</span>
-                <h2>Dataset Categories</h2>
-                <p>
-                    Eight categories were sampled at roughly 3,000 videos each during collection.
-                    The deployed model (V2) was ultimately trained on the four categories with the
-                    most consistent metadata quality and the clearest performance separation &mdash;
-                    narrowing scope in exchange for a more reliable signal, rather than spreading
-                    the model thin across every category.
-                </p>
-            </div>
+                    <table class="data-table" style="margin-bottom: var(--sp-6);">
+                        <thead>
+                            <tr><th>Category</th><th>Videos sampled</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Film and Animation</td><td>~3,000</td></tr>
+                            <tr><td>Music</td><td>~3,000</td></tr>
+                            <tr><td>Pets and Animals</td><td>~3,000</td></tr>
+                            <tr><td>Sports</td><td>~3,000</td></tr>
+                            <tr><td>Gaming</td><td>~3,000</td></tr>
+                            <tr><td>Comedy</td><td>~3,000</td></tr>
+                            <tr><td>Entertainment</td><td>~3,000</td></tr>
+                            <tr><td>News and Politics</td><td>~3,000</td></tr>
+                        </tbody>
+                    </table>
 
-            <div class="tag-grid">
-                <span class="category-pill">Music <span class="count">~3,000</span></span>
-                <span class="category-pill">Gaming <span class="count">~3,000</span></span>
-                <span class="category-pill">Sports <span class="count">~3,000</span></span>
-                <span class="category-pill">Entertainment <span class="count">~3,000</span></span>
-                <span class="category-pill">News &amp; Politics <span class="count">~3,000</span></span>
-                <span class="category-pill">People &amp; Blogs <span class="count">~3,000</span></span>
-                <span class="category-pill">Education <span class="count">~3,000</span></span>
-                <span class="category-pill">Science &amp; Technology <span class="count">~3,000</span></span>
-            </div>
-        </section>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; margin: 0 0 var(--sp-3);">
+                        Raw data moves through the following stages before it's ready for training:
+                    </p>
 
-        <!-- Section 4: Data Collection Pipeline -->
-        <section class="chart-section" id="pipeline">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 04</span>
-                <h2>Data Collection Pipeline</h2>
-                <p>Raw video data moves through several stages before it's ready for training.</p>
-            </div>
+                    <div class="pipeline">
+                        <div class="pipeline__step"><span class="pipeline__index">01</span><span class="pipeline__label">YouTube Data API</span></div>
+                        <div class="pipeline__step"><span class="pipeline__index">02</span><span class="pipeline__label">Video search</span></div>
+                        <div class="pipeline__step"><span class="pipeline__index">03</span><span class="pipeline__label">Metadata extraction</span></div>
+                        <div class="pipeline__step"><span class="pipeline__index">04</span><span class="pipeline__label">Raw dataset</span></div>
+                        <div class="pipeline__step"><span class="pipeline__index">05</span><span class="pipeline__label">Cleaning</span></div>
+                        <div class="pipeline__step"><span class="pipeline__index">06</span><span class="pipeline__label">Preprocessing</span></div>
+                        <div class="pipeline__step"><span class="pipeline__index">07</span><span class="pipeline__label">Final dataset</span></div>
+                    </div>
+                </section>
 
-            <div class="pipeline">
-                <div class="pipeline__step"><span class="pipeline__index">1</span><span class="pipeline__label">YouTube Data API</span></div>
-                <div class="pipeline__arrow">&darr;</div>
-                <div class="pipeline__step"><span class="pipeline__index">2</span><span class="pipeline__label">Video Search</span></div>
-                <div class="pipeline__arrow">&darr;</div>
-                <div class="pipeline__step"><span class="pipeline__index">3</span><span class="pipeline__label">Metadata Extraction</span></div>
-                <div class="pipeline__arrow">&darr;</div>
-                <div class="pipeline__step"><span class="pipeline__index">4</span><span class="pipeline__label">Raw Dataset</span></div>
-                <div class="pipeline__arrow">&darr;</div>
-                <div class="pipeline__step"><span class="pipeline__index">5</span><span class="pipeline__label">Cleaning</span></div>
-                <div class="pipeline__arrow">&darr;</div>
-                <div class="pipeline__step"><span class="pipeline__index">6</span><span class="pipeline__label">Preprocessing</span></div>
-                <div class="pipeline__arrow">&darr;</div>
-                <div class="pipeline__step"><span class="pipeline__index">7</span><span class="pipeline__label">Final Dataset</span></div>
-            </div>
-        </section>
+                <!-- Pillar 2: Feature Engineering & Preprocessing -->
+                <section class="chart-section" id="features-prep">
+                    <div class="chart-section__header">
+                        <span class="chart-section__eyebrow">02</span>
+                        <h2>Feature engineering &amp; preprocessing</h2>
+                        <p>The model fuses two distinct feature branches, mirroring the two forms the input naturally takes.</p>
+                    </div>
 
-        <!-- Section 5: Features Used -->
-        <section class="chart-section" id="features">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 05</span>
-                <h2>Features Used</h2>
-                <p>The model fuses two distinct feature branches, mirroring the two forms the input naturally takes.</p>
-            </div>
+                    <div class="feature-columns" style="margin-bottom: var(--sp-6);">
+                        <div class="feature-columns__col">
+                            <h3>Text</h3>
+                            <ul>
+                                <li>Title</li>
+                                <li>Tags</li>
+                                <li>Description</li>
+                            </ul>
+                        </div>
+                        <div class="feature-columns__col">
+                            <h3>Metadata</h3>
+                            <ul>
+                                <li>Subscriber count</li>
+                                <li>Duration</li>
+                                <li>Category ID</li>
+                            </ul>
+                        </div>
+                    </div>
 
-            <div class="feature-columns">
-                <div class="feature-columns__col">
-                    <h3>Text</h3>
-                    <ul>
-                        <li>Title</li>
-                        <li>Tags</li>
-                        <li>Description</li>
-                    </ul>
-                </div>
-                <div class="feature-columns__col">
-                    <h3>Metadata</h3>
-                    <ul>
-                        <li>Subscriber Count</li>
-                        <li>Duration</li>
-                        <li>Category ID</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Preprocessing step</th><th>Order</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Handling missing values</td><td>1</td></tr>
+                            <tr><td>Duration conversion to seconds</td><td>2</td></tr>
+                            <tr><td>Text cleaning</td><td>3</td></tr>
+                            <tr><td>Tokenization</td><td>4</td></tr>
+                            <tr><td>Sequence padding</td><td>5</td></tr>
+                            <tr><td>Metadata scaling</td><td>6</td></tr>
+                            <tr><td>Performance score calculation</td><td>7</td></tr>
+                            <tr><td>Performance class generation (Low / Medium / High)</td><td>8</td></tr>
+                        </tbody>
+                    </table>
+                </section>
 
-        <!-- Section 6: Data Preprocessing -->
-        <section class="chart-section" id="preprocessing">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 06</span>
-                <h2>Data Preprocessing</h2>
-                <p>Before training, the raw dataset passed through the following steps in order.</p>
-            </div>
+                <!-- Pillar 3: Model Architecture & Training -->
+                <section class="chart-section" id="architecture">
+                    <div class="chart-section__header">
+                        <span class="chart-section__eyebrow">03</span>
+                        <h2>Model architecture &amp; training</h2>
+                        <p>
+                            CNN is a multi-input, late-fusion network. Text and metadata are processed
+                            independently, then combined before the final classification layers.
+                        </p>
+                    </div>
 
-            <div class="checklist">
-                <div class="checklist__item"><span class="checklist__marker">&#10003;</span>Handling missing values</div>
-                <div class="checklist__item"><span class="checklist__marker">&#10003;</span>Duration conversion to seconds</div>
-                <div class="checklist__item"><span class="checklist__marker">&#10003;</span>Text cleaning</div>
-                <div class="checklist__item"><span class="checklist__marker">&#10003;</span>Tokenization</div>
-                <div class="checklist__item"><span class="checklist__marker">&#10003;</span>Sequence padding</div>
-                <div class="checklist__item"><span class="checklist__marker">&#10003;</span>Metadata scaling</div>
-                <div class="checklist__item"><span class="checklist__marker">&#10003;</span>Performance score calculation</div>
-                <div class="checklist__item"><span class="checklist__marker">&#10003;</span>Performance class generation (Low / Medium / High)</div>
-            </div>
-        </section>
+                    <div class="arch-diagram" style="margin-bottom: var(--sp-6);">
+                        <div class="arch-node">User input</div>
+                        <div class="arch-node">Tokenizer</div>
+                        <div class="arch-node">Embedding</div>
+                        <div class="arch-node--branch-row">
+                            <div class="arch-node">CNN text branch</div>
+                            <div class="arch-node">Metadata branch</div>
+                        </div>
+                        <div class="arch-node">Feature fusion</div>
+                        <div class="arch-node">Dense layers</div>
+                        <div class="arch-node">Prediction</div>
+                    </div>
 
-        <!-- Section 7: Model Architecture -->
-        <section class="chart-section" id="architecture">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 07</span>
-                <h2>Model Architecture</h2>
-                <p>
-                    CNN V2 is a multi-input, late-fusion network. Text and metadata are processed
-                    independently, then combined before the final classification layers.
-                </p>
-            </div>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; margin: 0 0 var(--sp-3);">
+                        Two baseline models were trained and compared before the final CNN was selected as the deployed model.
+                    </p>
 
-            <div class="arch-diagram">
-                <div class="arch-node">User Input</div>
-                <div class="arch-connector">&darr;</div>
-                <div class="arch-node">Tokenizer</div>
-                <div class="arch-connector">&darr;</div>
-                <div class="arch-node">Embedding</div>
-                <div class="arch-connector">&darr;</div>
-                <div class="arch-node--branch-row">
-                    <div class="arch-node">CNN Text Branch</div>
-                    <div class="arch-node">Metadata Branch</div>
-                </div>
-                <div class="arch-connector">&darr;</div>
-                <div class="arch-node">Feature Fusion</div>
-                <div class="arch-connector">&darr;</div>
-                <div class="arch-node">Dense Layers</div>
-                <div class="arch-connector">&darr;</div>
-                <div class="arch-node">Prediction</div>
-            </div>
-        </section>
+                    <div class="model-card-grid">
+                        <div class="model-card">
+                            <span class="model-card__tag">Baseline</span>
+                            <h3>Logistic Regression</h3>
+                            <p>A linear baseline trained over the scaled metadata features, used as a lower bound for comparison.</p>
+                        </div>
+                        <div class="model-card">
+                            <span class="model-card__tag">Baseline</span>
+                            <h3>Random Forest</h3>
+                            <p>A stronger non-linear baseline capable of capturing feature interactions without deep learning.</p>
+                        </div>
+                        <div class="model-card model-card--deployed">
+                            <span class="model-card__tag">Deployed</span>
+                            <h3>CNN</h3>
+                            <p>A multi-input late-fusion network combining a text branch with a metadata branch, selected for its accuracy advantage.</p>
+                        </div>
+                    </div>
+                </section>
 
-        <!-- Section 8: Model Development -->
-        <section class="chart-section" id="development">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 08</span>
-                <h2>Model Development</h2>
-                <p>Two baseline models were trained and compared before the final CNN was selected as the deployed model.</p>
-            </div>
+                <!-- Pillar 4: Evaluation, Challenges & Future Scope -->
+                <section class="chart-section" id="evaluation" style="border-bottom: none; margin-bottom: 2rem;">
+                    <div class="chart-section__header">
+                        <span class="chart-section__eyebrow">04</span>
+                        <h2>Evaluation, challenges &amp; future scope</h2>
+                        <p>
+                            Model selection was informed by exploratory data analysis, a Chi-square test of
+                            independence between category and performance class, accuracy comparisons across
+                            all three candidate models, confusion matrices for per-class behavior, and
+                            training/validation curves to confirm convergence without overfitting.
+                        </p>
+                    </div>
 
-            <div class="model-card-grid">
-                <div class="model-card">
-                    <span class="model-card__tag">Baseline</span>
-                    <h3>Logistic Regression</h3>
-                    <p>A linear baseline trained over the scaled metadata features, used as a lower bound for comparison.</p>
-                </div>
-                <div class="model-card">
-                    <span class="model-card__tag">Baseline</span>
-                    <h3>Random Forest</h3>
-                    <p>A stronger non-linear baseline capable of capturing feature interactions without deep learning.</p>
-                </div>
-                <div class="model-card model-card--deployed">
-                    <span class="model-card__tag">Deployed</span>
-                    <h3>CNN V2</h3>
-                    <p>A multi-input late-fusion network combining a text branch with a metadata branch, selected for its accuracy advantage.</p>
-                </div>
-            </div>
-        </section>
+                    <div class="insights-cta" style="margin-bottom: var(--sp-6);">
+                        <a href="/charts" class="btn btn-primary">View full charts &rarr;</a>
+                        <span class="form-hint">EDA, accuracy comparison, confusion matrices, and training curves.</span>
+                    </div>
 
-        <!-- Section 9: Evaluation -->
-        <section class="chart-section" id="evaluation">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 09</span>
-                <h2>Evaluation</h2>
-                <p>
-                    Model selection was informed by exploratory data analysis, a Chi-square test of
-                    independence between category and performance class, accuracy comparisons across
-                    all three candidate models, confusion matrices for per-class behavior, and
-                    training/validation curves to confirm convergence without overfitting.
-                </p>
-            </div>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; margin: 0 0 var(--sp-3);">
+                        Challenges encountered during development, and how each was addressed:
+                    </p>
 
-            <div class="insights-cta">
-                <a href="/charts" class="btn btn-primary">View Full Charts &rarr;</a>
-                <span class="form-hint">EDA, accuracy comparison, confusion matrices, and training curves.</span>
-            </div>
-        </section>
+                    <div class="challenge-grid" style="margin-bottom: var(--sp-6);">
+                        <div class="challenge-card">
+                            <div class="challenge-card__problem">Overfitting</div>
+                            <span class="challenge-card__arrow">&darr; addressed through</span>
+                            <div class="challenge-card__solution">Dropout layers, early stopping, and monitoring validation performance to improve model generalization.</div>
+                        </div>
+                        <div class="challenge-card">
+                            <div class="challenge-card__problem">Class separation difficulty</div>
+                            <span class="challenge-card__arrow">&darr; addressed through</span>
+                            <div class="challenge-card__solution">Dataset balancing and improved category selection to create clearer performance patterns across Low / Medium / High classes.</div>
+                        </div>
+                        <div class="challenge-card">
+                            <div class="challenge-card__problem">Weak metadata contribution</div>
+                            <span class="challenge-card__arrow">&darr; addressed through</span>
+                            <div class="challenge-card__solution">Feature engineering and scaling to improve the usefulness of subscriber count, duration, and category information alongside text features.</div>
+                        </div>
+                    </div>
 
-        <!-- Section 10: Challenges -->
-        <section class="chart-section" id="challenges">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 10</span>
-                <h2>Challenges</h2>
-                <p>Several challenges were encountered during development, requiring iterative improvements in data preparation, feature design, and model optimization.</p>
-            </div>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; margin: 0 0 var(--sp-3);">
+                        Directions that would meaningfully extend the project beyond its current scope:
+                    </p>
 
-            <div class="challenge-grid">
-                <div class="challenge-card">
-                    <div class="challenge-card__problem">Overfitting</div>
-                    <span class="challenge-card__arrow">&darr; addressed through</span>
-                    <div class="challenge-card__solution">Dropout layers, early stopping, and monitoring validation performance to improve model generalization.</div>
-                </div>
-                <div class="challenge-card">
-                    <div class="challenge-card__problem">Class separation difficulty</div>
-                    <span class="challenge-card__arrow">&darr; addressed through</span>
-                    <div class="challenge-card__solution">Dataset balancing and improved category selection to create clearer performance patterns across Low / Medium / High classes.</div>
-                </div>
-                <div class="challenge-card">
-                    <div class="challenge-card__problem">Weak metadata contribution</div>
-                    <span class="challenge-card__arrow">&darr; addressed through</span>
-                    <div class="challenge-card__solution">Feature engineering and scaling to improve the usefulness of subscriber count, duration, and category information alongside text features.</div>
-                </div>
+                    <div class="future-grid">
+                        <div class="future-card">
+                            <span class="future-card__title">Larger dataset</span>
+                            <span class="future-card__desc">More videos per category for stronger generalization.</span>
+                        </div>
+                        <div class="future-card">
+                            <span class="future-card__title">Transformer models</span>
+                            <span class="future-card__desc">Replace the CNN text branch with a transformer-based encoder.</span>
+                        </div>
+                        <div class="future-card">
+                            <span class="future-card__title">Live YouTube API</span>
+                            <span class="future-card__desc">Pull real-time metadata instead of relying on manual entry.</span>
+                        </div>
+                        <div class="future-card">
+                            <span class="future-card__title">Cloud deployment</span>
+                            <span class="future-card__desc">Host the model behind a scalable, production-grade endpoint.</span>
+                        </div>
+                        <div class="future-card">
+                            <span class="future-card__title">Thumbnail analysis</span>
+                            <span class="future-card__desc">Add a vision branch that scores thumbnail effectiveness.</span>
+                        </div>
+                        <div class="future-card">
+                            <span class="future-card__title">Improved UI/UX</span>
+                            <span class="future-card__desc">Continue refining the interface based on user feedback.</span>
+                        </div>
+                    </div>
+                </section>
             </div>
-        </section>
-
-        <!-- Section 11: Technologies -->
-        <section class="chart-section" id="tech">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 11</span>
-                <h2>Technologies</h2>
-                <p>The stack behind the model and the app serving it.</p>
-            </div>
-
-            <div class="badge-cloud">
-                <span class="tech-badge">Python</span>
-                <span class="tech-badge">TensorFlow</span>
-                <span class="tech-badge">Keras</span>
-                <span class="tech-badge">Scikit-learn</span>
-                <span class="tech-badge">Flask</span>
-                <span class="tech-badge">HTML</span>
-                <span class="tech-badge">CSS</span>
-                <span class="tech-badge">JavaScript</span>
-                <span class="tech-badge">Pandas</span>
-                <span class="tech-badge">NumPy</span>
-                <span class="tech-badge">Git</span>
-                <span class="tech-badge">GitHub</span>
-            </div>
-        </section>
-
-        <!-- Section 12: Future Improvements -->
-        <section class="chart-section" id="future" style="border-bottom: none; margin-bottom: 2rem;">
-            <div class="chart-section__header">
-                <span class="chart-section__eyebrow">Section 12</span>
-                <h2>Future Improvements</h2>
-                <p>Directions that would meaningfully extend the project beyond its current scope.</p>
-            </div>
-
-            <div class="future-grid">
-                <div class="future-card">
-                    <span class="future-card__title">Larger dataset</span>
-                    <span class="future-card__desc">More videos per category for stronger generalization.</span>
-                </div>
-                <div class="future-card">
-                    <span class="future-card__title">Transformer models</span>
-                    <span class="future-card__desc">Replace the CNN text branch with a transformer-based encoder.</span>
-                </div>
-                <div class="future-card">
-                    <span class="future-card__title">Live YouTube API</span>
-                    <span class="future-card__desc">Pull real-time metadata instead of relying on manual entry.</span>
-                </div>
-                <div class="future-card">
-                    <span class="future-card__title">Cloud deployment</span>
-                    <span class="future-card__desc">Host the model behind a scalable, production-grade endpoint.</span>
-                </div>
-                <div class="future-card">
-                    <span class="future-card__title">Thumbnail analysis</span>
-                    <span class="future-card__desc">Add a vision branch that scores thumbnail effectiveness.</span>
-                </div>
-                <div class="future-card">
-                    <span class="future-card__title">Improved UI/UX</span>
-                    <span class="future-card__desc">Continue refining the interface based on user feedback.</span>
-                </div>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Back to top button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">&uarr;</button>
 
     <footer>
-        <p>Final Year Project &mdash; YouTube Video Performance Estimator</p>
+        <p>Final Year Project — YouTube Video Performance Estimator</p>
     </footer>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

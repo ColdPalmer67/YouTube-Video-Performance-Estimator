@@ -1,9 +1,3 @@
-"""
-YouTube Video Performance Estimator
-
-Flask backend for serving the trained CNN model using ONNX Runtime.
-"""
-
 import os
 import csv
 import json
@@ -28,7 +22,6 @@ DATA_PATH = os.path.join(BASE_DIR, "data", "processed_youtube_data_v2.csv")
 MAX_SEQUENCE_LENGTH = 200
 CLASS_LABELS = ["Low", "Medium", "High"]
 
-# Flask Setup
 app = Flask(__name__)
 
 print("Loading ONNX model and preprocessing assets...")
@@ -67,15 +60,31 @@ max_duration = max([float(r.get("duration_seconds", 1)) for r in dataset_rows] o
 print("Assets loaded successfully.")
 
 
+MODEL_VOCAB_SIZE = 10000
+OOV_TOKEN_ID = 1
+
+
 def preprocess_text(text, maxlen=200):
     words = str(text).lower().split()
-    sequence = [word_index.get(w, 1) for w in words]
-    
-    padded = np.zeros((1, maxlen), dtype=np.float32)
+    sequence = []
+
+    for word in words:
+        token_id = word_index.get(word, OOV_TOKEN_ID)
+
+        if token_id >= MODEL_VOCAB_SIZE:
+            token_id = OOV_TOKEN_ID
+
+        sequence.append(token_id)
+
+    padded = np.zeros(
+        (1, maxlen),
+        dtype=np.float32
+    )
+
     if sequence:
         truncated = sequence[:maxlen]
-        padded[0, -len(truncated):] = truncated
-        
+        padded[0, :len(truncated)] = truncated
+
     return padded
 
 

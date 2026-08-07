@@ -2,12 +2,48 @@ document.addEventListener("DOMContentLoaded", function () {
   setupThemeToggle();
   setupNavToggle();
   setActiveNavLink();
+  setupNavScrollState();
   animateResultMeter();
   setupFormFeedback();
   setupCharCounter();
   setupLightbox();
   setupBackToTop();
+  setupInsightsScrollSpy();
 });
+
+// Highlight the current section in the Project Insights rail nav as the
+// reader scrolls, so the rail always reflects where they are on the page.
+function setupInsightsScrollSpy() {
+  var navLinks = document.querySelectorAll(".insights-nav a");
+  if (!navLinks.length) return;
+
+  var sections = Array.prototype.map.call(navLinks, function (link) {
+    var id = link.getAttribute("href").slice(1);
+    return document.getElementById(id);
+  }).filter(Boolean);
+
+  if (!sections.length) return;
+
+  function updateActive() {
+    var scrollPos = window.scrollY + window.innerHeight * 0.25;
+    var current = sections[0];
+
+    sections.forEach(function (section) {
+      if (section.offsetTop <= scrollPos) {
+        current = section;
+      }
+    });
+
+    navLinks.forEach(function (link) {
+      var isActive = link.getAttribute("href") === "#" + current.id;
+      link.classList.toggle("active", isActive);
+    });
+  }
+
+  window.addEventListener("scroll", updateActive, { passive: true });
+  window.addEventListener("resize", updateActive);
+  updateActive();
+}
 
 /* Light / dark theme toggle, persisted across visits */
 function setupThemeToggle() {
@@ -50,6 +86,23 @@ function setupThemeToggle() {
       button.setAttribute("aria-label", theme === "light" ? "Switch to dark theme" : "Switch to light theme");
     }
   }
+}
+
+// Give the floating navbar a glass background once the page scrolls
+function setupNavScrollState() {
+  var nav = document.querySelector(".navbar");
+  if (!nav) return;
+
+  function update() {
+    if (window.scrollY > 24) {
+      nav.classList.add("is-scrolled");
+    } else {
+      nav.classList.remove("is-scrolled");
+    }
+  }
+
+  window.addEventListener("scroll", update, { passive: true });
+  update();
 }
 
 /* Mobile navbar toggle. */

@@ -11,79 +11,83 @@
 <body>
 
     <nav class="navbar">
-        <a href="/" class="navbar__brand">
-            <span class="navbar__mark">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 3l16 9-16 9V3z"/></svg>
-            </span>
-            <span class="navbar__brand-text">
-                YT Performance Estimator
-                <small>Video Analytics Platform</small>
-            </span>
-        </a>
         <button class="navbar__toggle" aria-label="Toggle navigation">&#9776;</button>
         <ul class="navbar__links">
             <li><a href="/">Home</a></li>
             <li><a href="/predict-form">Predict</a></li>
-            <li><a href="/project-insights">Project Insights</a></li>
+            <li><a href="/project-insights">Insights</a></li>
             <li><a href="/charts">Charts</a></li>
         </ul>
         <div class="navbar__actions">
             <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light theme">&#9789;</button>
+            <a href="/predict-form" class="btn navbar__cta">Run a prediction</a>
         </div>
     </nav>
 
+    <section class="hero">
+        <div class="hero__inner">
+            <div>
+                <h1>YouTube Video Performance Classification Dashboard</h1>
+                <p>
+                    A dual-stream late-fusion CNN that evaluates video metadata and natural
+                    language signals to estimate reach class: Low, Medium, or High.
+                </p>
+                <div class="hero__actions">
+                    <a href="/predict-form" class="btn btn-primary">Run a prediction &rarr;</a>
+                    <a href="/project-insights" class="btn btn-secondary">Pipeline &amp; methodology</a>
+                </div>
+            </div>
+
+            <div class="model-preview" aria-hidden="true">
+                <span class="model-preview__label">Model summary</span>
+                <div class="model-preview__row" style="margin-top: 0.6rem;">
+                    <span class="model-preview__key">Architecture</span>
+                    <span class="model-preview__value">Multi-input CNN, late fusion</span>
+                </div>
+                <div class="model-preview__row">
+                    <span class="model-preview__key">Inputs</span>
+                    <span class="model-preview__value">Text branch + metadata branch</span>
+                </div>
+                <div class="model-preview__row">
+                    <span class="model-preview__key">Output classes</span>
+                    <span class="model-preview__value">Low / Medium / High</span>
+                </div>
+                <div class="model-preview__row">
+                    <span class="model-preview__key">Deployed model</span>
+                    <span class="model-preview__value high">CNN</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <main>
-        <div class="hero">
-            <span class="hero__eyebrow"><span class="dot"></span>NLP + Deep Learning &middot; Video Analytics System</span>
-            <h1>Predict YouTube video <span class="accent-text">performance</span> before you hit publish</h1>
-            <p>
-                A deep learning model analyzes video text and metadata signals to estimate whether content is likely to achieve Low, Medium, or High performance.
-            </p>
-            <div class="hero__actions">
-                <a href="/predict-form" class="btn btn-primary">Run a Prediction &rarr;</a>
-                <a href="/project-insights" class="btn btn-secondary">Explore the Project</a>
-            </div>
-            <div class="hero__signals">
-                <span class="hero__signal-chip"><span class="swatch low"></span>Low</span>
-                <span class="hero__signal-chip"><span class="swatch medium"></span>Medium</span>
-                <span class="hero__signal-chip"><span class="swatch high"></span>High</span>
-            </div>
+        {% if error %}
+            <div class="alert" style="margin-bottom: var(--sp-6);">{{ error }}</div>
+        {% endif %}
+
+        <div class="section-heading">
+            <span class="chart-section__eyebrow">Model design</span>
+            <h2>Multi-input late-fusion architecture</h2>
         </div>
 
-        <div class="card">
-            <h2>About this project</h2>
-            <p>
-                This application combines NLP, machine learning, and deep learning techniques to analyze YouTube video information and
-                estimate expected performance categories. The system was developed through a complete pipeline including
-                data collection, preprocessing, statistical analysis, model comparison, and Flask deployment.
-            </p>
-        </div>
-
-        <div class="action-grid">
-            <a href="/predict-form" class="action-card">
-                <span class="action-card__eyebrow">Run a prediction</span>
-                <span class="action-card__title">Estimate Video Performance &rarr;</span>
-                <span class="action-card__desc">Fill in your video's details and get an instant Low / Medium / High estimate.</span>
-            </a>
-
-            <a href="/project-insights" class="action-card">
-                <span class="action-card__eyebrow">Project deep dive</span>
-                <span class="action-card__title">See How It Was Built &rarr;</span>
-                <span class="action-card__desc">Dataset, pipeline, model architecture, and everything behind the prediction.</span>
-            </a>
-
-            <a href="/charts" class="action-card">
-                <span class="action-card__eyebrow">Model insights</span>
-                <span class="action-card__title">View EDA &amp; Evaluation Charts &rarr;</span>
-                <span class="action-card__desc">Confusion matrices, accuracy comparisons, and training curves.</span>
-            </a>
+        <div class="stream-grid">
+            <div class="stream-card">
+                <span class="stream-card__icon">Aa</span>
+                <h3>Text processing branch (CNN)</h3>
+                <p>Title, tags and description pass through a CNN text branch that picks up on
+                   tone, keywords and phrasing patterns tied to stronger performance.</p>
+            </div>
+            <div class="stream-card">
+                <span class="stream-card__icon">#</span>
+                <h3>Metadata feature vector</h3>
+                <p>Subscriber count, duration and category feed a parallel branch, scaled and
+                   fused with the text signal before the final prediction.</p>
+            </div>
         </div>
     </main>
 
     <footer>
-        <p>
-            Built as a Final Year Project · YouTube Video Performance Estimator
-        </p>
+        <p>Final Year Project — YouTube Video Performance Estimator</p>
     </footer>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

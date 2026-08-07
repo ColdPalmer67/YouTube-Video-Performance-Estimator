@@ -11,38 +11,30 @@
 <body>
 
     <nav class="navbar">
-        <a href="/" class="navbar__brand">
-            <span class="navbar__mark">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 3l16 9-16 9V3z"/></svg>
-            </span>
-            <span class="navbar__brand-text">
-                YT Performance Estimator
-                <small>Prediction Console</small>
-            </span>
-        </a>
         <button class="navbar__toggle" aria-label="Toggle navigation">&#9776;</button>
         <ul class="navbar__links">
             <li><a href="/">Home</a></li>
             <li><a href="/predict-form">Predict</a></li>
-            <li><a href="/project-insights">Project Insights</a></li>
+            <li><a href="/project-insights">Insights</a></li>
             <li><a href="/charts">Charts</a></li>
         </ul>
         <div class="navbar__actions">
             <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light theme">&#9789;</button>
+            <a href="/predict-form" class="btn navbar__cta">Run a prediction</a>
         </div>
     </nav>
 
     <main>
         <div class="page-header">
-            <span class="chart-section__eyebrow">Prediction Result</span>
+            <span class="chart-section__eyebrow">Prediction result</span>
             <h1>Estimate for &ldquo;{{ title }}&rdquo;</h1>
             <p>Here's how the model expects this video to perform, based on its text and metadata signals.</p>
         </div>
 
         <!-- Section 1: Prediction Result -->
         <section class="result-dashboard">
-            <div class="card result-hero result-hero--{{ label|lower }}">
-                <span class="result-hero__eyebrow">Predicted Performance</span>
+            <div class="result-hero">
+                <span class="result-hero__eyebrow">Predicted performance</span>
                 <div class="result-hero__badge-row">
                     <span class="result-hero__badge result-hero__badge--{{ label|lower }}">
                         <span class="result-hero__dot"></span>{{ label }}
@@ -52,7 +44,7 @@
                     {% if label == "High" %}
                         This video shows strong signals typically associated with top-performing content.
                     {% elif label == "Medium" %}
-                        This video shows moderate signals &mdash; solid, but with room to strengthen key metadata or messaging.
+                        This video shows moderate signals — solid, but with room to strengthen key metadata or messaging.
                     {% else %}
                         This video shows signals typically associated with lower-performing content.
                     {% endif %}
@@ -60,8 +52,8 @@
             </div>
 
             <!-- Section 2: Confidence -->
-            <div class="card confidence-card">
-                <span class="confidence-card__eyebrow">Model Confidence</span>
+            <div class="confidence-card">
+                <span class="confidence-card__eyebrow">Model confidence</span>
                 <div class="confidence-card__row">
                     <div class="meter meter--lg">
                         <div class="meter__fill {{ label|lower }}" data-confidence="{{ confidence }}"></div>
@@ -87,7 +79,8 @@
         <!-- Section 3: Similar Videos from Dataset -->
         <section class="chart-section similar-section">
             <div class="chart-section__header">
-                <h2>Similar Videos from Dataset</h2>
+                <span class="chart-section__eyebrow">Reference set</span>
+                <h2>Similar videos from dataset</h2>
                 <p>
                     These videos are retrieved from the training dataset based on similar
                     text content, subscriber range, duration, and category information.
@@ -147,13 +140,13 @@
         </section>
 
         <div class="result-actions result-actions--page">
-            <a href="/predict-form" class="btn btn-primary">Try Another Prediction</a>
-            <a href="/" class="btn btn-secondary">Back to Home</a>
+            <a href="/predict-form" class="btn btn-primary">Try another prediction</a>
+            <a href="/" class="btn btn-secondary">Back to home</a>
         </div>
     </main>
 
     <footer>
-        <p>Final Year Project &mdash; YouTube Video Performance Estimator</p>
+        <p>Final Year Project — YouTube Video Performance Estimator</p>
     </footer>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
